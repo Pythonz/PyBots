@@ -1,0 +1,8 @@
+#!/bin/sh
+while [ 1 ]; do
+	rm -f *.pyc
+	rm -f bots/*.pyc
+	python pybots.py $@
+	rm -f *.pyc
+	rm -f bots/*.pyc
+done;
