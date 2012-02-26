@@ -15,7 +15,7 @@ class fishbot(pybots.Bot):
 	def OnChanMsg(self, nick, chan, msg):
 		arg = msg.lower()
 		if arg.find("aftershock") != -1: self.msg(chan, "mmm. Aftershock.")
-		elif arg.startsiwith("fish go"):
+		elif arg.startswith("fish go"):
 			if arg.split()[2] == "moo" or arg.split()[2] == "mo0" or arg.split()[2] == "m0o" or arg.split()[2] == "m00":
 				self.act(chan, "notes that "+nick+" is truly enlightened.")
 			else:
