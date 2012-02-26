@@ -6,7 +6,7 @@ class snailbot(pybots.Bot):
 	uid = "AAAAAC"
 	host = "il"
 	user = "sn"
-	real = "slurm slurm slurm"
+	real = "slurm slurm slurm "+open("version","r").read()
 
 	def OnInvite(self, nick, channel):
 		self.join(channel)

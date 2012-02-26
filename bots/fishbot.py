@@ -6,7 +6,7 @@ class fishbot(pybots.Bot):
 	uid = "AAAAAA"
 	host = "go.moo.oh.yes.they.do"
 	user = "fish"
-	real = "Teh f1shb0t <°)))))><"
+	real = "Teh f1shb0t <°)))))>< "+open("version","r").read()
 
 	def OnInvite(self, nick, channel):
 		self.join(channel)
