@@ -15,5 +15,5 @@ class snailbot(pybots.Bot):
 	def OnChanMsg(self, nick, chan, args):
 		if args.find("xD") != -1:
 			self.msg(chan, ":D :D :D")
-		if args.find("ham") != -1:
+		elif args.find("ham") != -1:
 			self.msg(chan, "(=^;^=) pika pi")
