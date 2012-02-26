@@ -39,6 +39,11 @@ class PyBots:
 				exec("bot_real = bots."+bot+"."+bot+".real")
 				self.send(":%s UID %s %s %s %s %s %s 0.0.0.0 %s + :%s" % (self.id, self.id+bot_uid, time.time(), bot, bot_host, bot_host, bot_user, time.time(), bot_real))
 				self.bots[self.id+bot_uid] = bot
+				if not os.access("bots/"+self.id+bot_uid, os.F_OK):
+					os.mkdir("bots/"+self.id+bot_uid)
+				else:
+					for file in os.listdir("bots/"+self.id+bot_uid):
+						os.remove("bots/"+self.id+bot_uid+"/"+file)
 		while 1:
 			recv = self.con.recv(25600)
 			if not recv:
@@ -61,6 +66,16 @@ class PyBots:
 					if lined[1] == "IDLE" and len(lined) == 3:
 						if self.bots.has_key(lined[2]):
 							self.send(":"+lined[2]+" IDLE "+lined[0][1:]+" 0 0")
+					if lined[1] == "PRIVMSG":
+						nick = self.nicklist[lined[0][1:]]
+						for bot in self.bots.keys():
+							if os.access("bots/"+bot+"/"+lined[2]+".chan", os.F_OK):
+								text = ' '.join(lined[3:])[1:]
+								if text.startswith("\001ACTION") and text.endswith("\001"):
+									exec("""bots.%s.%s("%s").OnChanAct("%s", "%s", "%s")""" % (self.bots[bot], self.bots[bot], bot, nick, lined[2], text[8:-1]))
+								else:
+									exec("""bots.%s.%s("%s").OnChanMsg("%s", "%s", "%s")""" % (self.bots[bot], self.bots[bot], bot, nick, lined[2], text))
+
 
 	def send(self, message):
 		self.con.send(message+"\n")
@@ -83,11 +98,15 @@ class Bot:
 		self.id = self.config["SERVICES", "id"]
 		self.con = con
 		self.uid = uid
+		self.channel = {}
 
 	def OnPrivMsg(self, sNick, sMessage):
 		pass
 
 	def OnChanMsg(self, sNick, sChannel, sMessage):
+		pass
+
+	def OnChanAct(self, sNick, sChannel, sMessage):
 		pass
 
 	def OnInvite(self, sNick, sChannel):
@@ -108,9 +127,11 @@ class Bot:
 
 	def join(self, channel):
 		self.send(":"+self.uid+" JOIN "+channel)
+		open("bots/"+self.uid+"/"+channel+".chan", "w").write("")
 
 	def part(self, channel):
 		self.send(":"+self.uid+" PART "+channel)
+		os.remove("bots/"+self.uid+"/"+channel+".chan")
 
 if __name__ == "__main__":
 	PyBots(sys.argv[1]).run()

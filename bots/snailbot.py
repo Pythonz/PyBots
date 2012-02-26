@@ -11,3 +11,9 @@ class snailbot(pybots.Bot):
 	def OnInvite(self, nick, channel):
 		self.join(channel)
 		self.act(channel, "waves feelers at "+nick)
+
+	def OnChanMsg(self, nick, chan, args):
+		if args.find("xD") != -1:
+			self.msg(chan, ":D :D :D")
+		if args.find("ham") != -1:
+			self.msg(chan, "(=^;^=) pika pi")
