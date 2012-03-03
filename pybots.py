@@ -74,7 +74,7 @@ class PyBots:
 								if text.startswith("\001ACTION") and text.endswith("\001"):
 									exec("""bots.%s.%s("%s").OnChanAct("%s", "%s", "%s")""" % (self.bots[bot], self.bots[bot], bot, nick, lined[2], text[8:-1]))
 								else:
-									exec("""bots.%s.%s("%s").OnChanMsg("%s", "%s", "%s")""" % (self.bots[bot], self.bots[bot], bot, nick, lined[2], text))
+									exec("""bots.%s.%s("%s").OnChanMsg("%s", "%s", "%s")""" % (self.bots[bot], self.bots[bot], bot, nick, lined[2], text.replace("\"", "\\\"")))
 
 
 	def send(self, message):
