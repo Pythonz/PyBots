@@ -55,5 +55,5 @@ class snailbot(pybots.Bot):
 		elif args.isupper(): self.msg(chan, "OMG SHOUTING")
 
 	def OnChanAct(self, nick, chan, args):
-		if find(args, "slaps snailbot"): self.act(chan, "slurms on "+nick+" angrily")
+		if self.find(args, "slaps snailbot"): self.act(chan, "slurms on "+nick+" angrily")
 		elif self.find(args, "strokes snailbot"): self.act(chan, "waggles antennae with glee")

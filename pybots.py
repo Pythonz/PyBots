@@ -46,6 +46,8 @@ class PyBots:
 				else:
 					for file in os.listdir("bots/"+self.id+bot_uid):
 						os.remove("bots/"+self.id+bot_uid+"/"+file)
+		__builtin__.mbots = self.bots
+
 		while 1:
 			try:
 				recv = self.con.recv(25600)
@@ -79,7 +81,7 @@ class PyBots:
 								if os.access("bots/"+bot+"/"+lined[2]+".chan", os.F_OK):
 									text = ' '.join(lined[3:])[1:]
 									if text.startswith("\001ACTION") and text.endswith("\001"):
-										exec("""thread.start_new_thread(bots.%s.%s("%s", "%s").OnChanAct,("%s", "%s", "%s"))""" % (self.bots[bot], self.bots[bot], bot, self.conffile, nick, lined[2], text[8:-1]))
+										exec("""thread.start_new_thread(bots.%s.%s("%s", "%s").OnChanAct,("%s", "%s", "%s"))""" % (self.bots[bot], self.bots[bot], bot, self.conffile, nick, lined[2], text[8:-1].replace("\"", "\\\"")))
 									else:
 										exec("""thread.start_new_thread(bots.%s.%s("%s", "%s").OnChanMsg,("%s", "%s", "%s"))""" % (self.bots[bot], self.bots[bot], bot, self.conffile, nick, lined[2], text.replace("\"", "\\\"")))
 			except:
@@ -108,6 +110,7 @@ class Bot:
 		self.id = self.config["SERVICES", "id"]
 		self.con = con
 		self.uid = uid
+		self.conffile = conffile
 
 	def OnPrivMsg(self, sNick, sMessage):
 		pass
@@ -123,6 +126,7 @@ class Bot:
 
 	def send(self, message):
 		self.con.send(message+"\n")
+		
 		print(">> "+message)
 
 	def msg(self, target, message):
@@ -130,9 +134,17 @@ class Bot:
 			self.send(":"+self.uid+" PRIVMSG "+target+" :"+message)
 		else:
 			self.send(":"+self.uid+" NOTICE "+target+" :"+message)
+		for key,value in mbots.items():
+			if key.lower() != self.uid.lower():
+				if self.onchan(target, key):
+					exec("""thread.start_new_thread(bots.%s.%s("%s", "%s").OnChanMsg,("%s", "%s", "%s"))""" % (value, value, key, self.conffile, __name__.split(".")[-1], target, message.replace("\"", "\\\"")))
 
 	def act(self, target, message):
 		self.send(":"+self.uid+" PRIVMSG "+target+" :\001ACTION "+message+"\001")
+		for key,value in mbots.items():
+			if key.lower() != self.uid.lower():
+				if self.onchan(target, key):
+					exec("""thread.start_new_thread(bots.%s.%s("%s", "%s").OnChanAct,("%s", "%s", "%s"))""" % (value, value, key, self.conffile, __name__.split(".")[-1], target, message[8:-1].replace("\"", "\\\"")))
 
 	def join(self, channel):
 		self.send(":"+self.uid+" JOIN "+channel)
@@ -144,6 +156,13 @@ class Bot:
 
 	def find(self, string, term):
 		if string.find(term) != -1:
+			return True
+		return False
+
+	def onchan(self, channel, target=""):
+		if target == "":
+			target == self.uid
+		if os.access("bots/"+target+"/"+channel+".chan", os.F_OK):
 			return True
 		return False
 
