@@ -7,7 +7,7 @@ import socket
 import __builtin__
 import ConfigParser
 
-#sys.path.append("bots")
+__version__ = open("version", "r").read()
 
 import bots
 
@@ -134,4 +134,16 @@ class Bot:
 		os.remove("bots/"+self.uid+"/"+channel+".chan")
 
 if __name__ == "__main__":
-	PyBots(sys.argv[1]).run()
+	if len(sys.argv) == 2:
+		while True:
+			print("PyBots (" + __version__ + ") started")
+			PyBots(sys.argv[1]).run()
+			print("PyBots (" + __version__ + ") stopped")
+			time.sleep(5)
+	elif len(sys.argv) == 1:
+		while True:
+			print("PyBots (" + __version__ + ") started")
+			PyBots("config.cfg").run()
+			print("PyBots (" + __version__ + ") stopped")
+			time.sleep(5)
+
