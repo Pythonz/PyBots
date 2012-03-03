@@ -43,6 +43,8 @@ class snailbot(pybots.Bot):
 		elif args.find("slurm") != -1: self.msg(chan, "*slurm slurm slurm*")
 		elif args.find("snailbot") != -1:  self.msg(chan, "yes?")
 		elif args.find("#snailbot") != -1: self.msg(chan, "my home! :D")
+		elif args.find("snails") != -1: self.msg(chan, "@\037\"\037 @\037\"\037 @\037\"\037")
+		elif args.find("snail") != -1: self.msg(chan, "@\037\"\037")
 		elif args.isupper(): self.msg(chan, "OMG SHOUTING")
 		elif args.find("!stoptrivia") != -1: self.msg(chan, "!trivia")
 		elif args.find("thanks") != -1: self.msg(chan, "np")
