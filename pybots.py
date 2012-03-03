@@ -24,6 +24,7 @@ class PyBots:
 				self.config[section,item[0]] = item[1]
 		self.id = self.config["SERVICES", "id"]
 		self.bots = dict()
+		self.ubots = dict()
 
 	def run(self):
 		self.con = socket.socket()
@@ -41,12 +42,14 @@ class PyBots:
 				exec("bot_real = bots."+bot+"."+bot+".real")
 				self.send(":%s UID %s %s %s %s %s %s 0.0.0.0 %s + :%s" % (self.id, self.id+bot_uid, time.time(), bot, bot_host, bot_host, bot_user, time.time(), bot_real))
 				self.bots[self.id+bot_uid] = bot
+				self.ubots[bot] = self.id+bot_uid
 				if not os.access("bots/"+self.id+bot_uid, os.F_OK):
 					os.mkdir("bots/"+self.id+bot_uid)
 				else:
 					for file in os.listdir("bots/"+self.id+bot_uid):
 						os.remove("bots/"+self.id+bot_uid+"/"+file)
 		__builtin__.mbots = self.bots
+		__builtin__.ubots = self.ubots
 
 		while 1:
 			try:
@@ -67,7 +70,7 @@ class PyBots:
 						if lined[1] == "INVITE":
 							nick = self.nicklist[lined[0][1:]]
 							if self.bots.has_key(lined[2]):
-								exec("""bots.%s.%s("%s", "%s").OnInvite("%s", "%s")""" % (self.bots[lined[2]], self.bots[lined[2]], lined[2], self.conffile, nick, lined[3]))
+								exec("""thread.start_new_thread(bots.%s.%s("%s", "%s").OnInvite,("%s", "%s"))""" % (self.bots[lined[2]], self.bots[lined[2]], lined[2], self.conffile, nick, lined[3]))
 						if lined[1] == "KICK":
 							if self.bots.has_key(lined[3]):
 								if os.access("bots/"+lined[3]+"/"+lined[2]+".chan", os.F_OK):
@@ -126,7 +129,6 @@ class Bot:
 
 	def send(self, message):
 		self.con.send(message+"\n")
-		
 		print(">> "+message)
 
 	def msg(self, target, message):
@@ -137,21 +139,21 @@ class Bot:
 		for key,value in mbots.items():
 			if key.lower() != self.uid.lower():
 				if self.onchan(target, key):
-					exec("""thread.start_new_thread(bots.%s.%s("%s", "%s").OnChanMsg,("%s", "%s", "%s"))""" % (value, value, key, self.conffile, __name__.split(".")[-1], target, message.replace("\"", "\\\"")))
+					exec("""thread.start_new_thread(bots.%s.%s("%s", "%s").OnChanMsg,("%s", "%s", "%s"))""" % (value, value, key, self.conffile, mbots[self.uid], target, message.replace('"', '\\"')))
 
 	def act(self, target, message):
 		self.send(":"+self.uid+" PRIVMSG "+target+" :\001ACTION "+message+"\001")
 		for key,value in mbots.items():
 			if key.lower() != self.uid.lower():
 				if self.onchan(target, key):
-					exec("""thread.start_new_thread(bots.%s.%s("%s", "%s").OnChanAct,("%s", "%s", "%s"))""" % (value, value, key, self.conffile, __name__.split(".")[-1], target, message[8:-1].replace("\"", "\\\"")))
+					exec("""thread.start_new_thread(bots.%s.%s("%s", "%s").OnChanAct,("%s", "%s", "%s"))""" % (value, value, key, self.conffile, mbots[self.uid], target, message.replace('"', '\\"')))
 
 	def join(self, channel):
 		self.send(":"+self.uid+" JOIN "+channel)
 		open("bots/"+self.uid+"/"+channel+".chan", "w").write("")
 
-	def part(self, channel):
-		self.send(":"+self.uid+" PART "+channel)
+	def part(self, channel, message=""):
+		self.send(":"+self.uid+" PART "+channel+" :"+message)
 		os.remove("bots/"+self.uid+"/"+channel+".chan")
 
 	def find(self, string, term):
@@ -161,7 +163,9 @@ class Bot:
 
 	def onchan(self, channel, target=""):
 		if target == "":
-			target == self.uid
+			target = self.uid
+		if ubots.has_key(target):
+			target = ubots[target]
 		if os.access("bots/"+target+"/"+channel+".chan", os.F_OK):
 			return True
 		return False

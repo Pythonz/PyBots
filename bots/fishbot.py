@@ -2,6 +2,8 @@
 
 import pybots
 from fnmatch import fnmatch
+from time import sleep
+from random import randint
 
 class fishbot(pybots.Bot):
 	uid = "AAAAAA"
@@ -12,6 +14,9 @@ class fishbot(pybots.Bot):
 	def OnInvite(self, nick, channel):
 		self.join(channel)
 		self.act(channel, "m00s contentedly on "+nick+".")
+		if self.onchan(channel, "catbot"):
+			self.act(channel, "spots catbot.")
+			self.act(channel, "gets the water squirter")
 
 	def OnChanMsg(self, nick, chan, msg):
 		arg = msg.lower()
@@ -98,5 +103,15 @@ class fishbot(pybots.Bot):
 		elif fnmatch(arg, "slaps * around a bit with a large trout"): self.msg(chan, "trouted!")
 
 		if nick == "catbot":
-			if arg == "smells fishbot":
-				self.send(":"+self.uid+" KICK "+chan+" catbot :smell this!")
+			if arg == "pounces":
+				possibility = randint(0, 2)
+				if possibility == 0:
+					self.act(chan, "is scared :(")
+				elif possibility == 1:
+					self.act(chan, "flaps desperately trying to escape!")
+				else:
+					self.act(chan, "dodges")
+					self.part(chan)
+					sleep(10)
+					self.join(chan)
+					self.act(chan, "re-emerges")
