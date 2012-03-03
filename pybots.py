@@ -65,6 +65,10 @@ class PyBots:
 							nick = self.nicklist[lined[0][1:]]
 							if self.bots.has_key(lined[2]):
 								exec("""bots.%s.%s("%s", "%s").OnInvite("%s", "%s")""" % (self.bots[lined[2]], self.bots[lined[2]], lined[2], self.conffile, nick, lined[3]))
+						if lined[1] == "KICK":
+							if self.bots.has_key(lined[3]):
+								if os.access("bots/"+lined[3]+"/"+lined[2]+".chan", os.F_OK):
+									os.remove("bots/"+lined[3]+"/"+lined[2]+".chan")
 						if lined[1] == "IDLE" and len(lined) == 3:
 							if self.bots.has_key(lined[2]):
 								self.send(":"+lined[2]+" IDLE "+lined[0][1:]+" 0 0")
