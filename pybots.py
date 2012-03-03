@@ -17,6 +17,7 @@ class PyBots:
 		self.nicklist = dict()
 		config = ConfigParser.RawConfigParser()
 		config.read(conffile)
+		self.conffile = conffile
 		for section in config.sections():
 			for item in config.items(section):
 				self.config[section,item[0]] = item[1]
@@ -62,7 +63,7 @@ class PyBots:
 					if lined[1] == "INVITE":
 						nick = self.nicklist[lined[0][1:]]
 						if self.bots.has_key(lined[2]):
-							exec("""bots.%s.%s("%s").OnInvite("%s", "%s")""" % (self.bots[lined[2]], self.bots[lined[2]], lined[2], nick, lined[3]))
+							exec("""bots.%s.%s("%s", "%s").OnInvite("%s", "%s")""" % (self.bots[lined[2]], self.conffile, self.bots[lined[2]], lined[2], nick, lined[3]))
 					if lined[1] == "IDLE" and len(lined) == 3:
 						if self.bots.has_key(lined[2]):
 							self.send(":"+lined[2]+" IDLE "+lined[0][1:]+" 0 0")
@@ -72,9 +73,9 @@ class PyBots:
 							if os.access("bots/"+bot+"/"+lined[2]+".chan", os.F_OK):
 								text = ' '.join(lined[3:])[1:]
 								if text.startswith("\001ACTION") and text.endswith("\001"):
-									exec("""bots.%s.%s("%s").OnChanAct("%s", "%s", "%s")""" % (self.bots[bot], self.bots[bot], bot, nick, lined[2], text[8:-1]))
+									exec("""bots.%s.%s("%s", "%s").OnChanAct("%s", "%s", "%s")""" % (self.bots[bot], self.conffile, self.bots[bot], bot, nick, lined[2], text[8:-1]))
 								else:
-									exec("""bots.%s.%s("%s").OnChanMsg("%s", "%s", "%s")""" % (self.bots[bot], self.bots[bot], bot, nick, lined[2], text.replace("\"", "\\\"")))
+									exec("""bots.%s.%s("%s", "%s").OnChanMsg("%s", "%s", "%s")""" % (self.bots[bot], self.conffile, self.bots[bot], bot, nick, lined[2], text.replace("\"", "\\\"")))
 
 
 	def send(self, message):
@@ -87,11 +88,11 @@ class Bot:
 	host = ""
 	real = ""
 
-	def __init__(self, uid=""):
+	def __init__(self, uid="", conffile):
 		self.config = dict()
 		self.nicklist = nicklist
 		config = ConfigParser.RawConfigParser()
-		config.read(sys.argv[1])
+		config.read(conffile)
 		for section in config.sections():
 			for item in config.items(section):
 				self.config[section,item[0]] = item[1]
