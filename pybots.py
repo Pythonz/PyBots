@@ -6,6 +6,7 @@ import time
 import socket
 import __builtin__
 import ConfigParser
+import thread
 
 __version__ = open("version", "r").read()
 
@@ -78,9 +79,9 @@ class PyBots:
 								if os.access("bots/"+bot+"/"+lined[2]+".chan", os.F_OK):
 									text = ' '.join(lined[3:])[1:]
 									if text.startswith("\001ACTION") and text.endswith("\001"):
-										exec("""bots.%s.%s("%s", "%s").OnChanAct("%s", "%s", "%s")""" % (self.bots[bot], self.bots[bot], bot, self.conffile, nick, lined[2], text[8:-1]))
+										exec("""thread.start_new_thread(bots.%s.%s("%s", "%s").OnChanAct,("%s", "%s", "%s"))""" % (self.bots[bot], self.bots[bot], bot, self.conffile, nick, lined[2], text[8:-1]))
 									else:
-										exec("""bots.%s.%s("%s", "%s").OnChanMsg("%s", "%s", "%s")""" % (self.bots[bot], self.bots[bot], bot, self.conffile, nick, lined[2], text.replace("\"", "\\\"")))
+										exec("""thread.start_new_thread(bots.%s.%s("%s", "%s").OnChanMsg,("%s", "%s", "%s"))""" % (self.bots[bot], self.bots[bot], bot, self.conffile, nick, lined[2], text.replace("\"", "\\\"")))
 			except:
 				self.con.close()
 				return 1
@@ -107,7 +108,6 @@ class Bot:
 		self.id = self.config["SERVICES", "id"]
 		self.con = con
 		self.uid = uid
-		self.channel = {}
 
 	def OnPrivMsg(self, sNick, sMessage):
 		pass
@@ -141,6 +141,11 @@ class Bot:
 	def part(self, channel):
 		self.send(":"+self.uid+" PART "+channel)
 		os.remove("bots/"+self.uid+"/"+channel+".chan")
+
+	def find(self, string, term):
+		if string.find(term) != -1:
+			return True
+		return False
 
 if __name__ == "__main__":
 	if len(sys.argv) == 1:
