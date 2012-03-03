@@ -88,7 +88,7 @@ class Bot:
 	host = ""
 	real = ""
 
-	def __init__(self, uid="", conffile):
+	def __init__(self, uid="", conffile=""):
 		self.config = dict()
 		self.nicklist = nicklist
 		config = ConfigParser.RawConfigParser()
