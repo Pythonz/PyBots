@@ -4,4 +4,4 @@ pybots.py 9780d15aded90e673e12d8f3fa9ffcdb
 bots/__init__.py ad861c8bfd5763494066628984cc26f8
 bots/catbot.py d9eb8df2d3f859434cef4f145dcdf3e0
 bots/fishbot.py 9d5bff316e4b332b4322b031c47c7bb0
-bots/snailbot.py b5711cc1e48c517bd49874fda0b89577
+bots/snailbot.py 1dd67547d98e6b7a7ab8938198e05707

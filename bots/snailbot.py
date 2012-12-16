@@ -52,7 +52,7 @@ class snailbot(pybots.Bot):
 		elif self.find(args, "wtf"): self.msg(chan, "bbq")
 		elif self.find(args, "xD"): self.msg(chan, ":D :D :D")
 		elif self.find(args, "YA MUM"): self.msg(chan, "well bite me!")
-		elif args.isupper() && len(args.split()) > 1: self.msg(chan, "OMG SHOUTING")
+		elif args.isupper() and len(args.split()) > 1: self.msg(chan, "OMG SHOUTING")
 
 	def OnChanAct(self, nick, chan, args):
 		if self.find(args, "slaps snailbot"): self.act(chan, "slurms on "+nick+" angrily")
