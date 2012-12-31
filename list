@@ -1,6 +1,6 @@
 config.cfg.dist 527c4dbb771bab1e5cae867ec170a94f
 pybots 6a2c88e257cb47b9a99d6e50349164d8
-pybots.py 9780d15aded90e673e12d8f3fa9ffcdb
+pybots.py 332f38aff7451364170042511c61ccc0
 bots/__init__.py ad861c8bfd5763494066628984cc26f8
 bots/catbot.py d9eb8df2d3f859434cef4f145dcdf3e0
 bots/fishbot.py 9d5bff316e4b332b4322b031c47c7bb0

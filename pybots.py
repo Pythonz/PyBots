@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# Copyright by Pythonz 2012-2013
+
 import os
 import sys
 import time
